@@ -1,6 +1,6 @@
 services:
   hytale:
-    image: romariin/hytale-docker:latest
+    image: rxmarin/hytale-docker:latest
     container_name: hytale-server
     restart: unless-stopped
     stdin_open: true
@@ -17,8 +17,9 @@ services:
       TZ: "UTC"
     
     volumes:
-      - hytale-data:/server
-      - hytale-home:/home/hytale
+      - hytale-data:/server # Persist Hytale Server Data
+      - hytale-home:/home/hytale # Persist Hytale Home for Auth Persistence
+      - /etc/machine-id:/etc/machine-id:ro # Required for Auth Persistence Encrypted
     
     deploy:
       resources:
