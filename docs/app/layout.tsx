@@ -19,10 +19,11 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       <head>
         {process.env.NODE_ENV === "development" && (
           <Script
-            src="//unpkg.com/react-grab/dist/index.global.js"
-            crossOrigin="anonymous"
-            strategy="beforeInteractive"
+          src="//unpkg.com/react-grab/dist/index.global.js"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
           />
+          <Script defer src="https://analytics.romarin.dev/script.js" data-website-id="7881ff0d-d064-4d6f-b791-7337927f33d4"/>
         )}
       </head>
       <body className="flex flex-col min-h-screen">
