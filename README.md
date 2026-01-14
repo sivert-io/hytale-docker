@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🎮 Hytale Docker Server
+<img src="docs/public/logo.png" alt="Hytale Docker" width="128" />
+
+# Hytale Docker Server
 
 **Production-ready Docker container for Hytale dedicated servers**
 
