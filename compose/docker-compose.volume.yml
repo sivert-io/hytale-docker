@@ -1,0 +1,38 @@
+services:
+  hytale:
+    image: rxmarin/hytale-docker:latest
+    container_name: hytale-server
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - "5520:5520/udp"
+    
+    environment:
+      JAVA_OPTS: "-Xms8G -Xmx16G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:G1HeapRegionSize=16m -XX:InitiatingHeapOccupancyPercent=45"
+      SERVER_PORT: "5520"
+      PATCHLINE: "release"
+      FORCE_UPDATE: "true"
+      TZ: "UTC"
+    
+    volumes:
+      - hytale-data:/server
+      - /etc/machine-id:/etc/machine-id:ro
+    
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+          cpus: '4.0'
+        reservations:
+          cpus: '2.0'
+    
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "HytaleServer.jar"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+volumes:
+  hytale-data:

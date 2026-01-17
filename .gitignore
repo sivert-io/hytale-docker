@@ -1,1 +1,5 @@
-data
+# Data directory (bind mount location - don't commit server data)
+data/
+
+# Docker volumes
+*.log

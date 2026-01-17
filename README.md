@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://hytale.com/static/images/logo.png" alt="Hytale Docker" width="140">
+  <img src="assets/Hytale-Logo-Illustrated.png" alt="Hytale Docker">
   
   # Hytale Docker Server
   
@@ -8,10 +8,10 @@
   <p>Automated authentication, auto-updates, and secure by default. One command from setup to gameplay.</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](compose/docker-compose.yml)
 [![Java](https://img.shields.io/badge/Java-25-ED8B00?logo=openjdk&logoColor=white)](https://adoptium.net)
 
-**📚 <a href="https://hytale.romarin.dev" target="_blank">Full Documentation</a>** • <a href="https://hytale.romarin.dev/docs/quick-start" target="_blank">Quick Start</a> • <a href="https://hytale.romarin.dev/docs/configuration" target="_blank">Configuration</a> • <a href="./PERFORMANCE.md" target="_blank">Performance Guide</a> • <a href="https://github.com/sivert-io/hytale-docker/issues" target="_blank">💬 Issues & Support</a>
+**📚 <a href="https://hytale.romarin.dev" target="_blank">Full Documentation</a>** • <a href="https://hytale.romarin.dev/docs/quick-start" target="_blank">Quick Start</a> • <a href="https://hytale.romarin.dev/docs/configuration" target="_blank">Configuration</a> • <a href="./docs/PERFORMANCE.md" target="_blank">Performance Guide</a> • <a href="https://github.com/sivert-io/hytale-docker/issues" target="_blank">💬 Issues & Support</a>
 
 </div>
 
@@ -47,7 +47,7 @@ Get up and running in minutes with Docker:
 ```bash
 # Clone the repository
 git clone https://github.com/sivert-io/hytale-docker.git
-cd hytale-docker
+cd hytale-docker/compose
 
 # Start the server (uses bind mount by default)
 docker compose up -d
@@ -66,9 +66,11 @@ Connect to your server at `your-ip:5520` using the Hytale client.
 
 ```bash
 # Graceful shutdown (recommended)
+cd compose
 ./docker-compose-down.sh
 
 # This sends /stop to the server first, then brings down containers
+# Or from project root: ./compose/docker-compose-down.sh
 ```
 
 If you use `docker compose down` directly, the server may not have time to save recent changes before shutdown.
@@ -77,15 +79,15 @@ If you use `docker compose down` directly, the server may not have time to save 
 
 This repository provides two docker-compose configurations:
 
-- **`docker-compose.yml`** (Default) - Uses a bind mount to `~/docker/hytale-docker/data/`
+- **`compose/docker-compose.yml`** (Default) - Uses a bind mount to `~/docker/hytale-docker/data/`
   - Direct file access on the host
   - Data is easily accessible and manageable
   - Recommended for most users
 
-- **`docker-compose.volume.yml`** - Uses a named Docker volume (`hytale-data`)
+- **`compose/docker-compose.volume.yml`** - Uses a named Docker volume (`hytale-data`)
   - Use this if you prefer Docker-managed volumes
   - Docker automatically initializes the volume with scripts from the image
-  - To use: `docker compose -f docker-compose.volume.yml up -d`
+  - To use: `cd compose && docker compose -f docker-compose.volume.yml up -d`
 
 > **Note:** Hytale uses **QUIC over UDP** (not TCP). Forward UDP port 5520 on your firewall.
 
@@ -110,9 +112,9 @@ Topics covered:
 - [Security](https://hytale.romarin.dev/docs/security)
 - [Troubleshooting](https://hytale.romarin.dev/docs/troubleshooting)
 
-📊 **[PERFORMANCE.md](./PERFORMANCE.md)** — Performance guide following [Hytale's official recommendations](https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual)
+📊 **[docs/PERFORMANCE.md](./docs/PERFORMANCE.md)** — Performance guide following [Hytale's official recommendations](https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual)
 
-🔧 **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** — Common errors and warnings explained
+🔧 **[docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** — Common errors and warnings explained
 
 ---
 
@@ -125,10 +127,10 @@ Topics covered:
 docker build -t hytale-server:latest .
 
 # Build and push multi-architecture image to Docker Hub
-./build-and-push.sh
+./tools/build-and-push.sh
 
 # Custom image name and tag
-DOCKER_IMAGE="your-username/hytale-docker" DOCKER_TAG="v1.0.0" ./build-and-push.sh
+DOCKER_IMAGE="your-username/hytale-docker" DOCKER_TAG="v1.0.0" ./tools/build-and-push.sh
 ```
 
 The build script automatically:
