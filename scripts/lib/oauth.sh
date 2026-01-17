@@ -627,11 +627,17 @@ refresh_game_session() {
         -H "Content-Type: application/json" \
         2>&1)
     
+    # Check if response is valid JSON before parsing
+    if ! echo "${response}" | jq empty 2>/dev/null; then
+        log_warn "Invalid JSON response from session refresh"
+        return 1
+    fi
+    
     # Check for new tokens
     local new_session_token new_identity_token expires_at
-    new_session_token=$(echo "${response}" | jq -r '.sessionToken // empty')
-    new_identity_token=$(echo "${response}" | jq -r '.identityToken // empty')
-    expires_at=$(echo "${response}" | jq -r '.expiresAt // empty')
+    new_session_token=$(echo "${response}" | jq -r '.sessionToken // empty' 2>/dev/null || echo "")
+    new_identity_token=$(echo "${response}" | jq -r '.identityToken // empty' 2>/dev/null || echo "")
+    expires_at=$(echo "${response}" | jq -r '.expiresAt // empty' 2>/dev/null || echo "")
     
     if [[ -n "${new_session_token}" ]] && [[ -n "${new_identity_token}" ]]; then
         save_session_tokens "${new_session_token}" "${new_identity_token}" "${expires_at}"

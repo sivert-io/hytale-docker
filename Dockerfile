@@ -54,6 +54,19 @@ COPY --chown=1000:1000 scripts/hytale-cmd.sh /usr/local/bin/hytale-cmd
 COPY --chown=1000:1000 scripts/hytale-auth.sh /usr/local/bin/hytale-auth
 RUN chmod +x /server/scripts/entrypoint.sh /usr/local/bin/hytale-cmd /usr/local/bin/hytale-auth
 
+# Copy scripts to backup location (for syncing to bind mounts)
+RUN mkdir -p /opt/hytale-scripts/scripts && \
+    cp -r /server/scripts /opt/hytale-scripts/ && \
+    cp /usr/local/bin/hytale-cmd /opt/hytale-scripts/ && \
+    cp /usr/local/bin/hytale-auth /opt/hytale-scripts/ && \
+    chown -R 1000:1000 /opt/hytale-scripts
+COPY --chown=1000:1000 scripts/entrypoint-wrapper.sh /opt/hytale-scripts/scripts/
+RUN chmod +x /opt/hytale-scripts/scripts/entrypoint-wrapper.sh && \
+    chown 1000:1000 /opt/hytale-scripts/scripts/entrypoint-wrapper.sh
+COPY --chown=1000:1000 scripts/entrypoint-wrapper.sh /opt/hytale-scripts/scripts/
+RUN chmod +x /opt/hytale-scripts/scripts/entrypoint-wrapper.sh && \
+    chown 1000:1000 /opt/hytale-scripts/scripts/entrypoint-wrapper.sh
+
 # =============================================================================
 # Environment variables
 # =============================================================================
@@ -84,4 +97,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
 USER 1000:1000
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["/server/scripts/entrypoint.sh"]
+CMD ["/opt/hytale-scripts/scripts/entrypoint-wrapper.sh"]
