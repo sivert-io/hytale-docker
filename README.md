@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/Hytale-Logo-Illustrated.png" alt="Hytale Docker" width="140">
+  <img src="assets/Hytale-Logo-Illustrated.png" alt="Hytale Docker">
   
   # Hytale Docker Server
   
@@ -113,39 +113,6 @@ This sends `/stop` to the server first, then brings down containers. Using `dock
 
 ---
 
-## 🏗️ Development
-
-### Building the Docker Image
-
-```bash
-# Build locally (single architecture)
-docker build -t hytale-server:latest .
-
-# Build and push multi-architecture image to Docker Hub
-./tools/build-and-push.sh
-
-# Custom image name and tag
-DOCKER_IMAGE="your-username/hytale-docker" DOCKER_TAG="v1.0.0" ./tools/build-and-push.sh
-```
-
-The build script automatically:
-- Builds for multiple architectures (linux/amd64, linux/arm64)
-- Creates a buildx builder if needed
-- Pushes to Docker Hub
-- Tags both `:latest` and the specified tag
-
-### Monitoring Performance
-
-```bash
-# Monitor server performance
-./tools/monitor.sh
-
-# Or watch continuously
-watch -n 2 ./tools/monitor.sh
-```
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Whether you're fixing bugs, adding features, improving docs, or sharing ideas.
@@ -156,7 +123,7 @@ Feel free to open an [issue](https://github.com/sivert-io/hytale-docker/issues) 
 
 ## 📜 License
 
-MIT License - see [LICENSE](https://github.com/sivert-io/hytale-docker/blob/main/LICENSE) for details
+MIT License - see [LICENSE](LICENSE) for details
 
 ---
 
