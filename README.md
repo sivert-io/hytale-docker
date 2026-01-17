@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/Hytale-Logo-Illustrated.png" alt="Hytale Docker">
+  <img src="assets/Hytale-Logo-Illustrated.png" alt="Hytale Docker" width="140">
   
   # Hytale Docker Server
   
@@ -7,11 +7,11 @@
   
   <p>Automated authentication, auto-updates, and secure by default. One command from setup to gameplay.</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/sivert-io/hytale-docker/blob/main/LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](compose/docker-compose.yml)
 [![Java](https://img.shields.io/badge/Java-25-ED8B00?logo=openjdk&logoColor=white)](https://adoptium.net)
 
-**📚 <a href="https://hytale.romarin.dev" target="_blank">Full Documentation</a>** • <a href="https://hytale.romarin.dev/docs/quick-start" target="_blank">Quick Start</a> • <a href="https://hytale.romarin.dev/docs/configuration" target="_blank">Configuration</a> • <a href="./docs/PERFORMANCE.md" target="_blank">Performance Guide</a> • <a href="https://github.com/sivert-io/hytale-docker/issues" target="_blank">💬 Issues & Support</a>
+**📚 <a href="#-quick-start" target="_blank">Quick Start</a>** • <a href="./docs/PERFORMANCE.md" target="_blank">Performance</a> • <a href="./docs/TROUBLESHOOTING.md" target="_blank">Troubleshooting</a> • <a href="https://github.com/sivert-io/hytale-docker/issues" target="_blank">💬 Issues & Support</a>
 
 </div>
 
@@ -26,7 +26,8 @@
 🔒 **Secure by Default** — Non-root user, dropped capabilities, hardened container  
 ⚡ **Fast Boot** — AOT cache support for quicker server startup  
 💾 **Persistent Data** — Worlds, tokens, and logs survive container restarts  
-📊 **Performance Optimized** — Follows official Hytale server recommendations (16GB RAM, 4 CPU cores)
+📊 **Performance Optimized** — Follows official Hytale server recommendations (16GB RAM, 4 CPU cores)  
+🛠️ **Script Auto-Sync** — Scripts automatically update from image on container start
 
 ---
 
@@ -42,14 +43,14 @@
 
 ## 🚀 Quick Start
 
-Get up and running in minutes with Docker:
+Get up and running in minutes:
 
 ```bash
 # Clone the repository
 git clone https://github.com/sivert-io/hytale-docker.git
 cd hytale-docker/compose
 
-# Start the server (uses bind mount by default)
+# Start the server
 docker compose up -d
 
 # Watch for authentication prompt
@@ -60,22 +61,11 @@ On first run, you'll see a device authorization prompt. Visit the URL, enter the
 
 Connect to your server at `your-ip:5520` using the Hytale client.
 
-### Stopping the Server
+> **Note:** Hytale uses **QUIC over UDP** (not TCP). Forward UDP port 5520 on your firewall.
 
-**Important:** Always use the graceful shutdown script to ensure the server saves properly:
+---
 
-```bash
-# Graceful shutdown (recommended)
-cd compose
-./docker-compose-down.sh
-
-# This sends /stop to the server first, then brings down containers
-# Or from project root: ./compose/docker-compose-down.sh
-```
-
-If you use `docker compose down` directly, the server may not have time to save recent changes before shutdown.
-
-### Volume Options
+## 📦 Volume Options
 
 This repository provides two docker-compose configurations:
 
@@ -89,32 +79,37 @@ This repository provides two docker-compose configurations:
   - Docker automatically initializes the volume with scripts from the image
   - To use: `cd compose && docker compose -f docker-compose.volume.yml up -d`
 
-> **Note:** Hytale uses **QUIC over UDP** (not TCP). Forward UDP port 5520 on your firewall.
+---
+
+## 🛑 Stopping the Server
+
+**Important:** Always use the graceful shutdown script to ensure the server saves properly:
+
+```bash
+# From compose directory
+cd compose
+./docker-compose-down.sh
+
+# Or from project root
+./compose/docker-compose-down.sh
+```
+
+This sends `/stop` to the server first, then brings down containers. Using `docker compose down` directly may not give the server time to save recent changes.
 
 ---
 
 ## 📖 Documentation
 
-### Official Hytale Documentation
-
-- **[Hytale Server Manual](https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual)** — Official server setup guide
-- **[Server Provider Authentication Guide](https://support.hytale.com/hc/en-us/articles/45328341414043-Server-Provider-Authentication-Guide)** — Authentication setup
-
 ### Project Documentation
-
-📚 **[hytale.romarin.dev](https://hytale.romarin.dev)** — Full Docker documentation
-
-Topics covered:
-- [Quick Start Guide](https://hytale.romarin.dev/docs/quick-start)
-- [Configuration](https://hytale.romarin.dev/docs/configuration)
-- [Authentication](https://hytale.romarin.dev/docs/authentication)
-- [Network Setup](https://hytale.romarin.dev/docs/network-setup)
-- [Security](https://hytale.romarin.dev/docs/security)
-- [Troubleshooting](https://hytale.romarin.dev/docs/troubleshooting)
 
 📊 **[docs/PERFORMANCE.md](./docs/PERFORMANCE.md)** — Performance guide following [Hytale's official recommendations](https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual)
 
 🔧 **[docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** — Common errors and warnings explained
+
+### Official Hytale Documentation
+
+- **[Hytale Server Manual](https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual)** — Official server setup guide
+- **[Server Provider Authentication Guide](https://support.hytale.com/hc/en-us/articles/45328341414043-Server-Provider-Authentication-Guide)** — Authentication setup
 
 ---
 
@@ -123,7 +118,7 @@ Topics covered:
 ### Building the Docker Image
 
 ```bash
-# Build the image locally (single architecture)
+# Build locally (single architecture)
 docker build -t hytale-server:latest .
 
 # Build and push multi-architecture image to Docker Hub
@@ -139,12 +134,14 @@ The build script automatically:
 - Pushes to Docker Hub
 - Tags both `:latest` and the specified tag
 
-### Running the Documentation Site
+### Monitoring Performance
 
 ```bash
-cd docs
-npm install
-npm run dev
+# Monitor server performance
+./tools/monitor.sh
+
+# Or watch continuously
+watch -n 2 ./tools/monitor.sh
 ```
 
 ---
@@ -159,14 +156,10 @@ Feel free to open an [issue](https://github.com/sivert-io/hytale-docker/issues) 
 
 ## 📜 License
 
-MIT License - see [LICENSE](LICENSE) for details
-
-**Credits:** <a href="https://github.com/romariin/hytale-docker" target="_blank">romariin/hytale-docker</a> (original project) • <a href="https://github.com/rxmarin/hytale-docker" target="_blank">rxmarin/hytale-docker</a> (Docker image)
+MIT License - see [LICENSE](https://github.com/sivert-io/hytale-docker/blob/main/LICENSE) for details
 
 ---
 
 <div align="center">
   <strong>Made with ❤️ for the Hytale community</strong>
-  
-  <p><em>Forked from <a href="https://romarin.dev" target="_blank">romarin.dev</a> • Maintained by <a href="https://github.com/sivert-io" target="_blank">sivert-io</a></em></p>
 </div>
