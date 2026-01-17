@@ -19,4 +19,4 @@ else
 fi
 
 echo "Bringing down containers..."
-docker compose down "$@"
+docker compose down --remove-orphans "$@"

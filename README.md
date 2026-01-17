@@ -96,6 +96,28 @@ cd compose
 
 This sends `/stop` to the server first, then brings down containers. Using `docker compose down` directly may not give the server time to save recent changes.
 
+### Restarting the Server
+
+After stopping, you can start the server again with:
+
+```bash
+# Simple start (builds image if needed, uses existing container)
+cd compose
+docker compose up -d
+
+# Or use the helper script with options
+./docker-compose-up.sh              # Normal start (builds if needed)
+./docker-compose-up.sh --recreate   # Force recreate (picks up new env vars)
+./docker-compose-up.sh --rebuild    # Force rebuild image (no cache)
+./docker-compose-up.sh --no-build   # Skip building (use existing image)
+```
+
+**When to use each option:**
+- **Normal start**: Builds the image from the local Dockerfile if needed, then starts the container
+- **`--recreate`**: You changed environment variables in `docker-compose.yml` and need them applied
+- **`--rebuild`**: You modified the Dockerfile or scripts and want to rebuild the image from scratch
+- **`--no-build`**: Skip building and use an existing image (faster if image is already built)
+
 ---
 
 ## 📖 Documentation

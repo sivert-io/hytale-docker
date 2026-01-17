@@ -1,6 +1,9 @@
 services:
   hytale:
-    image: rxmarin/hytale-docker:latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: hytale-docker:local
     container_name: hytale-server
     restart: unless-stopped
     stdin_open: true
