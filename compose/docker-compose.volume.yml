@@ -12,7 +12,7 @@ services:
       - "5520:5520/udp"
     
     environment:
-      JAVA_OPTS: "-Xms8G -Xmx16G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:G1HeapRegionSize=16m -XX:InitiatingHeapOccupancyPercent=45"
+      JAVA_OPTS: "-Xms8G -Xmx16G -XX:+UseG1GC"
       SERVER_PORT: "5520"
       PATCHLINE: "release"
       FORCE_UPDATE: "true"

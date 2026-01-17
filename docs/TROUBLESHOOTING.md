@@ -25,10 +25,7 @@ jq: parse error: Invalid numeric literal at line 1, column 8
 **Cause:** Chunk loading is taking longer than the server's tick step (usually ~16-20ms), causing lag.
 
 **Fixes Applied:**
-- ✅ **Optimized G1GC settings** to reduce GC pauses during chunk loading:
-  - `-XX:MaxGCPauseMillis=200` - Limits GC pause time
-  - `-XX:G1HeapRegionSize=16m` - Optimizes region size for large heaps
-  - `-XX:InitiatingHeapOccupancyPercent=45` - Starts GC earlier to avoid large pauses
+- ✅ **Using G1GC** (`-XX:+UseG1GC`) - Recommended garbage collector from Hytale's official setup guide
 
 **Additional Recommendations:**
 - Reduce view distance in `config.json` (if available):
@@ -47,7 +44,7 @@ jq: parse error: Invalid numeric literal at line 1, column 8
 Took too long to run pre-load process hook for chunk: ... Has GC Run: true
 ```
 
-**Fix:** ✅ **Improved** - The new GC settings should reduce GC frequency and pause times.
+**Fix:** Using G1GC as recommended by Hytale's official setup guide. GC pauses during chunk loading are normal but can cause lag if excessive.
 
 ## ⚠️ Game-Side Issues (Cannot Fix)
 
@@ -84,9 +81,14 @@ Trying to remove out of order
 InteractionChain: Attempted to store sync data at X. Offset: Y, Size: Z
 ```
 
-**Cause:** Game logic bugs in entity interaction handling.
+**Cause:** 
+- Game logic bugs in entity interaction handling
+- **Dynamic TPS changes** - If you have a mod that changes TPS (ticks per second) dynamically, this can cause the interaction queue to desynchronize, leading to out-of-order removals
 
-**Action:** None - These are game bugs. The server handles them gracefully by removing problematic interactions.
+**Action:** 
+- If you have a mod that changes TPS dynamically, try stabilizing the TPS or making changes more gradual
+- The server handles these errors gracefully by removing problematic interactions and disconnecting affected players
+- Consider using a fixed TPS instead of dynamic changes during active gameplay
 
 ### 4. Processing Bench Warnings
 
@@ -147,8 +149,8 @@ If you're still experiencing lag after the optimizations:
 
 ## 📝 Summary
 
-- ✅ **Fixed:** jq parse errors, GC tuning for chunk loading
+- ✅ **Fixed:** jq parse errors
 - ⚠️ **Game bugs:** Missing interactions, NPC overpopulation, interaction chain errors
-- 💡 **Optimizations:** GC settings improved, monitor performance regularly
+- 💡 **Configuration:** Using G1GC as recommended by Hytale's official setup guide
 
-Most SEVERE errors about chunk loading should be reduced with the new GC settings. The game-side warnings are normal and don't affect server stability.
+The game-side warnings are normal and don't affect server stability. Chunk loading delays may occur during heavy world generation but should improve as chunks are pre-loaded.

@@ -92,7 +92,7 @@ If experiencing lag, check:
    - Monitor network I/O in stats
 
 5. **GC Pauses** - If memory is tight, Java GC can cause stuttering
-   - Current G1GC settings should help
+   - Using G1GC as recommended by Hytale
    - Monitor with `-XX:+PrintGCDetails` if needed (add to JAVA_OPTS)
 
 ## 💡 Configuration Examples
