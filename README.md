@@ -33,15 +33,30 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/romariin/hytale-docker.git
-cd hytale-docker/examples
+git clone https://github.com/sivert-io/hytale-docker.git
+cd hytale-docker
 
-# Start the server
+# Start the server (uses bind mount by default)
 docker compose up -d
 
 # Watch for authentication prompt
 docker compose logs -f
 ```
+
+### Volume Options
+
+This repository provides two docker-compose configurations:
+
+- **`docker-compose.yml`** (Default) - Uses a bind mount to `~/docker/hytale-docker/data/`
+  - Direct file access on the host (similar to enshrouded setup)
+  - Data is easily accessible and manageable
+  - Recommended for most users
+
+- **`docker-compose.volume.yml`** - Uses a named Docker volume (`hytale-data`)
+  - Use this if you prefer Docker-managed volumes
+  - Docker automatically initializes the volume with scripts from the image
+  - Data is stored in Docker's volume location (`/var/lib/docker/volumes/`)
+  - To use: `docker compose -f docker-compose.volume.yml up -d`
 
 On first run, you'll see a device authorization prompt. Visit the URL, enter the code, and authorize. The server starts automatically.
 
@@ -88,10 +103,10 @@ npm run dev
 
 <div align="center">
 
-**Made with ❤️ by [romarin.dev](https://romarin.dev)**
+**Forked from [romarin.dev](https://romarin.dev)** • **Maintained by [sivert-io](https://github.com/sivert-io)**
 
-[Documentation](https://hytale.romarin.dev) •
-[Report Bug](https://github.com/rxmarin/hytale-docker/issues) •
-[Request Feature](https://github.com/rxmarin/hytale-docker/issues)
+[Original Documentation](https://hytale.romarin.dev) •
+[Report Bug](https://github.com/sivert-io/hytale-docker/issues) •
+[Request Feature](https://github.com/sivert-io/hytale-docker/issues)
 
 </div>

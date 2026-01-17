@@ -16,7 +16,7 @@ services:
       TZ: "UTC"
     
     volumes:
-      - ${HOME}/docker/hytale-docker/data:/server
+      - hytale-data:/server
       - /etc/machine-id:/etc/machine-id:ro
     
     deploy:
@@ -33,3 +33,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 120s
+
+volumes:
+  hytale-data:
