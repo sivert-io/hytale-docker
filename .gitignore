@@ -3,3 +3,5 @@ data/
 
 # Docker volumes
 *.log
+
+metrics/

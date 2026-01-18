@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="assets/Hytale-Logo-Illustrated.png" alt="Hytale Docker">
+  <img src="assets/Hytale-Logo-Illustrated.png" alt="Hytale Server">
   
-  # Hytale Docker Server
+  # Hytale Server
   
-  ⚡ **Production-ready Docker container for Hytale dedicated servers**
+  ⚡ **Production-ready Hytale dedicated server with Native Java (recommended) or Docker support**
   
-  <p>Automated authentication, auto-updates, and secure by default. One command from setup to gameplay.</p>
+  <p>Automated authentication, auto-updates, and secure by default. Native for best performance, Docker for isolation.</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/sivert-io/hytale-docker/blob/main/LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](compose/docker-compose.yml)
@@ -19,84 +19,107 @@
 
 ## ✨ Features
 
-🚀 **One-Command Startup** — Just `docker compose up`, authenticate once, play forever  
+⚡ **Native Java (Recommended)** — Best performance with lower CPU and memory usage  
+🐳 **Docker Support** — Containerized option with isolation and deployment automation  
+🚀 **One-Command Startup** — Just `./tools/run-native.sh` or `./tools/compose-up.sh`  
 🔐 **OAuth2 Authentication** — Single device code flow for both downloader and server  
 🔄 **Auto-Refresh Tokens** — Background daemon keeps tokens valid (30-day refresh tokens)  
 📦 **Auto-Updates** — Downloads and updates server files automatically on every start  
-🔒 **Secure by Default** — Non-root user, dropped capabilities, hardened container  
 ⚡ **Fast Boot** — AOT cache support for quicker server startup  
-💾 **Persistent Data** — Worlds, tokens, and logs survive container restarts  
+💾 **Persistent Data** — Worlds, tokens, and logs survive restarts  
 📊 **Performance Optimized** — Follows official Hytale server recommendations (16GB RAM, 4 CPU cores)  
-🛠️ **Script Auto-Sync** — Scripts automatically update from image on container start
+🔧 **Easy Java Setup** — Automatically installs Java 25 if missing (via Eclipse Temurin)
 
 ---
 
 ## ⚙️ Requirements
 
-- **Docker** and **Docker Compose** ([Install Docker](https://docs.docker.com/engine/install/))
+- **Java 25+** (auto-installed by `run-native.sh` if missing) OR **Docker + Docker Compose** for Docker option
 - **Hytale account** for server authentication
 - **16GB RAM** recommended (8GB minimum)
 - **4 CPU cores** recommended (2 cores minimum)
 - **UDP port 5520** open and forwarded on your firewall/router
 
+> **Recommendation:** Use Native Java for better performance (~6% less CPU, ~3% less memory). Docker is available as an alternative if you prefer containerization.
+
 ---
 
 ## 🚀 Quick Start
 
-Get up and running in minutes:
+Two ways to run your Hytale server: **Native (Recommended)** or **Docker**. Native is faster, uses fewer resources, and has better performance. Docker is useful for isolation and deployment automation.
+
+### ⚡ Option 1: Native Java (Recommended - Best Performance)
+
+**Why Native?** Better performance (~25% less CPU, ~3% less memory), faster startup, no Docker overhead. This is the recommended option for most users.
 
 ```bash
 # Clone the repository
 git clone https://github.com/sivert-io/hytale-docker.git
 cd hytale-docker
 
-# Start the server (uses helper script)
-./scripts/compose-up.sh
+# Start the server natively (automatically installs Java 25 if needed)
+./tools/run-native.sh
 
-# Watch for authentication prompt
-cd compose
-docker compose logs -f
+# The server will start and prompt for authentication on first run
 ```
 
 On first run, you'll see a device authorization prompt. Visit the URL, enter the code, and authorize. The server starts automatically.
 
 Connect to your server at `your-ip:5520` using the Hytale client.
 
-> **Alternative:** You can also run `cd compose && docker compose up -d` directly if you prefer.
+### 🐳 Option 2: Docker (Alternative - Better Isolation)
+
+Use Docker if you prefer containerization, want better isolation, or need Docker-specific deployment features.
+
+```bash
+# Clone the repository
+git clone https://github.com/sivert-io/hytale-docker.git
+cd hytale-docker
+
+# Start the server with Docker
+./tools/compose-up.sh
+
+# Watch for authentication prompt
+cd compose
+docker compose logs -f
+```
 
 > **Note:** Hytale uses **QUIC over UDP** (not TCP). Forward UDP port 5520 on your firewall.
 
+### 📊 Performance Comparison
+
+Based on real-world benchmarks:
+- **Native**: ~18% CPU, ~11,150MB memory (8.8% of system) - **Recommended**
+- **Docker**: ~25% CPU, ~11,500MB memory (9.1% of system) - More overhead
+
+Native is **more efficient** with lower resource usage and better performance.
+
 ---
 
-## ☕ Running Natively with Java
-
-You can also run the Hytale server natively with Java (without Docker). This is useful for debugging, development, or when Docker isn't available.
-
-### Requirements
-
-- **Java 25+** (Eclipse Temurin recommended) — The script will check and offer to install if missing
-- **Server files** in the `data/` directory (you can get these by running the Docker setup once)
+**Requirements:**
+- **Java 25+** (auto-installed by script if missing) - Eclipse Temurin via Adoptium
+- **Server files** in the `data/` directory (you can get these by running the Docker setup once, or manually)
 
 ### Usage
 
 ```bash
 # Run natively from project root
-./scripts/run-native.sh
+./tools/run-native.sh
 
 # With custom memory settings
-JAVA_OPTS="-Xms8G -Xmx16G" ./scripts/run-native.sh
+JAVA_OPTS="-Xms8G -Xmx16G" ./tools/run-native.sh
 
 # With custom port
-SERVER_PORT="5520" ./scripts/run-native.sh
+SERVER_PORT="5520" ./tools/run-native.sh
 ```
 
-The script will:
-- ✅ Check if Java 25+ is installed
-- ✅ Offer to install Java 25 (Eclipse Temurin) if missing
-- ✅ Verify server files are present
-- ✅ Launch the server with the same settings as the Docker version
+**Features:**
+- ✅ **Auto-installs Java 25** if needed (Eclipse Temurin via Adoptium)
+- ✅ **Verifies server files** exist in `data/`
+- ✅ **Same configuration** as Docker version (JAVA_OPTS, AOT cache, etc.)
+- ✅ **Shared data directory** - worlds and settings work with both methods
 
-**Note:** The native script uses the same `data/` directory structure as Docker, so server files are shared between both methods.
+**Note:** You can switch between Native and Docker - they share the same `data/` directory, so your worlds and settings persist.
 
 ---
 
@@ -118,33 +141,51 @@ This repository provides two docker-compose configurations:
 
 ## 🛑 Stopping the Server
 
+### Native Java
+
+Press `Ctrl+C` in the terminal, or if running in background:
+
+```bash
+pkill -f "HytaleServer.jar"
+```
+
+### Docker
+
 **Important:** Always use the graceful shutdown script to ensure the server saves properly:
 
 ```bash
 # Use the helper script from project root
-./scripts/compose-down.sh
-
-# Or from scripts directory
-cd scripts
-./compose-down.sh
+./tools/compose-down.sh
 ```
 
 This sends `/stop` to the server first, then brings down containers. Using `docker compose down` directly may not give the server time to save recent changes.
 
-### Starting and Restarting the Server
+---
 
-Use the helper scripts from the `scripts/` directory:
+## 🔄 Restarting the Server
+
+### Native Java
+
+Just run the script again - it will start fresh:
+
+```bash
+./tools/run-native.sh
+```
+
+### Docker
+
+Use the helper scripts:
 
 ```bash
 # Start the server (from project root)
-./scripts/compose-up.sh              # Normal start (builds if needed)
-./scripts/compose-up.sh --recreate   # Force recreate (picks up new env vars)
-./scripts/compose-up.sh --rebuild    # Force rebuild image (no cache)
-./scripts/compose-up.sh --no-build   # Skip building (use existing image)
+./tools/compose-up.sh              # Normal start (builds if needed)
+./tools/compose-up.sh --recreate   # Force recreate (picks up new env vars)
+./tools/compose-up.sh --rebuild    # Force rebuild image (no cache)
+./tools/compose-up.sh --no-build   # Skip building (use existing image)
 
 # Restart the server (stop then start)
-./scripts/compose-restart.sh         # Normal restart
-./scripts/compose-restart.sh --rebuild  # Restart with rebuild option
+./tools/compose-restart.sh         # Normal restart
+./tools/compose-restart.sh --rebuild  # Restart with rebuild option
 ```
 
 **When to use each option:**

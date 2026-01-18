@@ -42,21 +42,21 @@ C_CYAN='\033[0;36m'
 # Helper functions
 # =============================================================================
 print_header() {
-    echo -e "${C_BOLD}${C_CYAN}═══════════════════════════════════════════════════════════${C_RESET}"
-    echo -e "${C_BOLD}  $1${C_RESET}"
-    echo -e "${C_BOLD}${C_CYAN}═══════════════════════════════════════════════════════════${C_RESET}"
+    echo -e "${C_BOLD}${C_CYAN}═══════════════════════════════════════════════════════════${C_RESET}" >&2
+    echo -e "${C_BOLD}  $1${C_RESET}" >&2
+    echo -e "${C_BOLD}${C_CYAN}═══════════════════════════════════════════════════════════${C_RESET}" >&2
 }
 
 log_info() {
-    echo -e "${C_CYAN}[INFO]${C_RESET} $1"
+    echo -e "${C_CYAN}[INFO]${C_RESET} $1" >&2
 }
 
 log_success() {
-    echo -e "${C_GREEN}[✓]${C_RESET} $1"
+    echo -e "${C_GREEN}[✓]${C_RESET} $1" >&2
 }
 
 log_warn() {
-    echo -e "${C_YELLOW}[WARN]${C_RESET} $1"
+    echo -e "${C_YELLOW}[WARN]${C_RESET} $1" >&2
 }
 
 log_error() {
@@ -100,9 +100,12 @@ check_java_version() {
 # =============================================================================
 # Install Java 25 (Eclipse Temurin)
 # Following official Hytale requirements: https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual
+# Eclipse Temurin is distributed by Eclipse Adoptium (adoptium.net) - a vendor-neutral,
+# open-source project under the Eclipse Foundation (successor to AdoptOpenJDK)
 # =============================================================================
 install_java() {
     log_info "Java ${REQUIRED_JAVA_MAJOR} (Eclipse Temurin) is required for Hytale"
+    log_info "Installing Eclipse Temurin via Eclipse Adoptium (adoptium.net)"
     
     # Detect OS
     if [[ ! -f /etc/os-release ]]; then
@@ -203,36 +206,42 @@ verify_server_files() {
 }
 
 # =============================================================================
-# Build Java launch command
+# Build Java launch command as an array
 # =============================================================================
-build_launch_command() {
-    local cmd="java"
+build_launch_command_array() {
+    local cmd=()
     
-    # Java memory options
-    cmd+=" ${JAVA_OPTS}"
+    cmd+=("java")
+    
+    # Split JAVA_OPTS into separate arguments
+    # This handles spaces in options like "-Xms4G -Xmx8G"
+    read -ra java_opts_array <<< "$JAVA_OPTS"
+    cmd+=("${java_opts_array[@]}")
     
     # AOT cache (for faster startup)
     if [[ "$USE_AOT_CACHE" == "true" ]] && [[ -f "$AOT_CACHE" ]]; then
-        cmd+=" -XX:AOTCache=${AOT_CACHE}"
+        cmd+=("-XX:AOTCache=${AOT_CACHE}")
         log_info "Using AOT cache: $AOT_CACHE"
     fi
     
     # Server JAR and required arguments
-    cmd+=" -jar \"${SERVER_JAR}\""
-    cmd+=" --assets \"${ASSETS_ZIP}\""
-    cmd+=" --bind 0.0.0.0:${SERVER_PORT}"
+    cmd+=("-jar" "${SERVER_JAR}")
+    cmd+=("--assets" "${ASSETS_ZIP}")
+    cmd+=("--bind" "0.0.0.0:${SERVER_PORT}")
     
     # Optional flags
     if [[ "$DISABLE_SENTRY" == "true" ]]; then
-        cmd+=" --disable-sentry"
+        cmd+=("--disable-sentry")
     fi
     
-    # Extra arguments
+    # Extra arguments (split if provided)
     if [[ -n "$EXTRA_ARGS" ]]; then
-        cmd+=" ${EXTRA_ARGS}"
+        read -ra extra_args_array <<< "$EXTRA_ARGS"
+        cmd+=("${extra_args_array[@]}")
     fi
     
-    echo "$cmd"
+    # Output array contents (one per line for mapfile)
+    printf '%s\n' "${cmd[@]}"
 }
 
 # =============================================================================
@@ -240,6 +249,17 @@ build_launch_command() {
 # =============================================================================
 main() {
     print_header "Hytale Server Native Launcher"
+    
+    # Warn if running as root (server should run as normal user)
+    if [[ $EUID -eq 0 ]]; then
+        log_warn "Running as root is not recommended for security reasons"
+        log_info "The server will run as root. Consider running as a normal user instead."
+        read -p "Continue anyway? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    fi
     
     # Check Java
     log_info "Checking Java installation..."
@@ -283,9 +303,9 @@ main() {
     log_info "Verifying server files..."
     verify_server_files
     
-    # Build and run launch command
-    local launch_cmd
-    launch_cmd=$(build_launch_command)
+    # Build launch command as array (avoids eval issues with special chars)
+    local launch_cmd_array
+    mapfile -t launch_cmd_array < <(build_launch_command_array)
     
     log_success "Starting Hytale server..."
     log_info "Port: ${SERVER_PORT}/UDP"
@@ -297,7 +317,7 @@ main() {
     
     # Change to server directory and run
     cd "$SERVER_DIR"
-    eval "$launch_cmd"
+    exec "${launch_cmd_array[@]}"
 }
 
 # Run main function

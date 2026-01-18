@@ -5,7 +5,8 @@ set -e
 
 # Get script directory and navigate to compose directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COMPOSE_DIR="${SCRIPT_DIR}/../compose"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+COMPOSE_DIR="${PROJECT_ROOT}/compose"
 cd "${COMPOSE_DIR}"
 
 REBUILD=false

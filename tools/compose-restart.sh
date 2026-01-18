@@ -15,6 +15,6 @@ echo "=== Stopping server ==="
 "${SCRIPT_DIR}/compose-down.sh"
 echo ""
 
-# Then start it
+# Then start it (pass through all arguments)
 echo "=== Starting server ==="
 "${SCRIPT_DIR}/compose-up.sh" "$@"
