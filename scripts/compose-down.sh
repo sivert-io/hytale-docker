@@ -3,6 +3,11 @@
 
 set -e
 
+# Get script directory and navigate to compose directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_DIR="${SCRIPT_DIR}/../compose"
+cd "${COMPOSE_DIR}"
+
 CONTAINER_NAME="hytale-server"
 
 echo "Stopping Hytale server gracefully..."

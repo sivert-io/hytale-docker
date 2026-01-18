@@ -3,6 +3,11 @@
 
 set -e
 
+# Get script directory and navigate to compose directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_DIR="${SCRIPT_DIR}/../compose"
+cd "${COMPOSE_DIR}"
+
 REBUILD=false
 RECREATE=false
 NO_BUILD=false

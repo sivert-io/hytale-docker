@@ -48,12 +48,13 @@ Get up and running in minutes:
 ```bash
 # Clone the repository
 git clone https://github.com/sivert-io/hytale-docker.git
-cd hytale-docker/compose
+cd hytale-docker
 
-# Start the server
-docker compose up -d
+# Start the server (uses helper script)
+./scripts/compose-up.sh
 
 # Watch for authentication prompt
+cd compose
 docker compose logs -f
 ```
 
@@ -61,7 +62,41 @@ On first run, you'll see a device authorization prompt. Visit the URL, enter the
 
 Connect to your server at `your-ip:5520` using the Hytale client.
 
+> **Alternative:** You can also run `cd compose && docker compose up -d` directly if you prefer.
+
 > **Note:** Hytale uses **QUIC over UDP** (not TCP). Forward UDP port 5520 on your firewall.
+
+---
+
+## ☕ Running Natively with Java
+
+You can also run the Hytale server natively with Java (without Docker). This is useful for debugging, development, or when Docker isn't available.
+
+### Requirements
+
+- **Java 25+** (Eclipse Temurin recommended) — The script will check and offer to install if missing
+- **Server files** in the `data/` directory (you can get these by running the Docker setup once)
+
+### Usage
+
+```bash
+# Run natively from project root
+./scripts/run-native.sh
+
+# With custom memory settings
+JAVA_OPTS="-Xms8G -Xmx16G" ./scripts/run-native.sh
+
+# With custom port
+SERVER_PORT="5520" ./scripts/run-native.sh
+```
+
+The script will:
+- ✅ Check if Java 25+ is installed
+- ✅ Offer to install Java 25 (Eclipse Temurin) if missing
+- ✅ Verify server files are present
+- ✅ Launch the server with the same settings as the Docker version
+
+**Note:** The native script uses the same `data/` directory structure as Docker, so server files are shared between both methods.
 
 ---
 
@@ -86,30 +121,30 @@ This repository provides two docker-compose configurations:
 **Important:** Always use the graceful shutdown script to ensure the server saves properly:
 
 ```bash
-# From compose directory
-cd compose
-./docker-compose-down.sh
+# Use the helper script from project root
+./scripts/compose-down.sh
 
-# Or from project root
-./compose/docker-compose-down.sh
+# Or from scripts directory
+cd scripts
+./compose-down.sh
 ```
 
 This sends `/stop` to the server first, then brings down containers. Using `docker compose down` directly may not give the server time to save recent changes.
 
-### Restarting the Server
+### Starting and Restarting the Server
 
-After stopping, you can start the server again with:
+Use the helper scripts from the `scripts/` directory:
 
 ```bash
-# Simple start (builds image if needed, uses existing container)
-cd compose
-docker compose up -d
+# Start the server (from project root)
+./scripts/compose-up.sh              # Normal start (builds if needed)
+./scripts/compose-up.sh --recreate   # Force recreate (picks up new env vars)
+./scripts/compose-up.sh --rebuild    # Force rebuild image (no cache)
+./scripts/compose-up.sh --no-build   # Skip building (use existing image)
 
-# Or use the helper script with options
-./docker-compose-up.sh              # Normal start (builds if needed)
-./docker-compose-up.sh --recreate   # Force recreate (picks up new env vars)
-./docker-compose-up.sh --rebuild    # Force rebuild image (no cache)
-./docker-compose-up.sh --no-build   # Skip building (use existing image)
+# Restart the server (stop then start)
+./scripts/compose-restart.sh         # Normal restart
+./scripts/compose-restart.sh --rebuild  # Restart with rebuild option
 ```
 
 **When to use each option:**
